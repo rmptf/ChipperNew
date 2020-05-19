@@ -54,10 +54,10 @@ function addBank(e) {
 }
 
 function removeBigBlind() {
-  bank[playNumIndex].amount -= smallBlind;
+  bank[playNumIndex].amount -= bigBlind;
 }
 function addBigBlind() {
-  bank[playNumIndex].amount += smallBlind;
+  bank[playNumIndex].amount += bigBlind;
 }
 
 b = -1;
@@ -184,7 +184,7 @@ function actionsPlayer(e) {
     b = -1;
     console.log("balls: " + a);
     console.log("balls: " + b);
-    // localStorage.removeItem("bank");
+    localStorage.removeItem("bank");
   }
 
   // Fold button
