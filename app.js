@@ -6,30 +6,30 @@ filterOption = document.querySelector(".filter-players");
 const testButton = document.querySelector(".test-button");
 
 let bank = [];
-const bankSize = 2000;
+const bankSize = 100;
 const bigBlind = bankSize * 0.01;
 const smallBlind = bankSize * 0.005;
 
 // Event Listeners
 document.addEventListener("DOMContentLoaded", getPlayers);
 addButton.addEventListener("click", addPlayer);
-playerList.addEventListener("click", actionsPlayer);
+// playerList.addEventListener("click", actionsPlayer);
 filterOption.addEventListener("click", filterPlayers);
 testButton.addEventListener("click", testClick);
 
-var incrementFrom0 = (function (n) {
-  return function () {
-    n += 1;
-    return n;
-  };
-})(-1);
+// var incrementFrom0 = (function (n) {
+//   return function () {
+//     n += 1;
+//     return n;
+//   };
+// })(-1);
 
-var incrementFrom02 = (function (n) {
-  return function () {
-    n += 1;
-    return n;
-  };
-})(-1);
+// var incrementFrom02 = (function (n) {
+//   return function () {
+//     n += 1;
+//     return n;
+//   };
+// })(-1);
 
 // var incrementFrom03 = (function (n) {
 //   return function () {
@@ -44,10 +44,23 @@ class Bank {
   }
 }
 
+a = -1;
 function addBank(e) {
-  bank[incrementFrom0()] = new Bank(bankSize);
+  if (a < 8) {
+    a += 1;
+  }
+  // bank[incrementFrom0()] = new Bank(bankSize);
+  bank[a] = new Bank(bankSize);
 }
 
+function removeBigBlind() {
+  bank[playNumIndex].amount -= smallBlind;
+}
+function addBigBlind() {
+  bank[playNumIndex].amount += smallBlind;
+}
+
+b = -1;
 // Functions
 function addPlayer(event) {
   event.preventDefault();
@@ -128,7 +141,11 @@ function addPlayer(event) {
 
   // Bank Button
   const bankButton = document.createElement("button");
-  bankButton.innerText = bank[incrementFrom02()].amount;
+  if (b < 8) {
+    b += 1;
+  }
+  // bankButton.innerText = bank[incrementFrom02()].amount;
+  bankButton.innerText = bank[b].amount;
   bankButton.classList.add("bank-btn");
   playerDiv.appendChild(bankButton);
 
@@ -159,9 +176,14 @@ function actionsPlayer(e) {
       player.remove();
     });
 
+    // removes bank from local storage. right now just removes the first bank from array.
+    // need to make it so the bank item in array removed, is the corrent item corrosponding with player who exits
     bank.splice(0, 1);
     localStorage.setItem("bank", JSON.stringify(bank));
-
+    a = -1;
+    b = -1;
+    console.log("balls: " + a);
+    console.log("balls: " + b);
     // localStorage.removeItem("bank");
   }
 
@@ -171,7 +193,7 @@ function actionsPlayer(e) {
     player.classList.toggle("folded");
     testClick(e);
     // console.log("button position in class: " + player.classList.indexOf);
-    console.log(Array.from(player.parentElement.classList));
+    // console.log(Array.from(player.parentElement.classList));
   }
 
   // Check button
@@ -198,11 +220,24 @@ function actionsPlayer(e) {
     console.log(player.childNodes[5].childNodes[1].classList);
   }
 
+  // Decrease button
+  if (item.classList[0] === "decrease-btn") {
+    const player = item.parentElement.parentElement;
+    // player.childNodes[7].innerText = bigBlind;
+    addBigBlind();
+    player.childNodes[6].innerText = bank[playNumIndex].amount;
+    // player.childNodes[7].innerText += bigBlind;
+    localStorage.setItem("bank", JSON.stringify(bank));
+  }
+
   // Increase button
   if (item.classList[0] === "increase-btn") {
     const player = item.parentElement.parentElement;
-    player.childNodes[6].innerText = bankSize - bigBlind;
-    player.childNodes[7].innerText = bigBlind;
+    // player.childNodes[7].innerText = bigBlind;
+    removeBigBlind();
+    player.childNodes[6].innerText = bank[playNumIndex].amount;
+    // player.childNodes[7].innerText += bigBlind;
+    localStorage.setItem("bank", JSON.stringify(bank));
   }
 }
 
@@ -326,7 +361,10 @@ function getPlayers() {
 
     // Bank Button
     const bankButton = document.createElement("button");
-    // bankButton.innerText = bank[incrementFrom03].amount;
+    if (b < 8) {
+      b += 1;
+    }
+    bankButton.innerText = bank[b].amount;
     bankButton.classList.add("bank-btn");
     playerDiv.appendChild(bankButton);
 
