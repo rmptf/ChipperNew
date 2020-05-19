@@ -4,20 +4,54 @@ const addButton = document.querySelector(".add-button");
 const playerList = document.querySelector(".player-list");
 filterOption = document.querySelector(".filter-players");
 const testButton = document.querySelector(".test-button");
-const bank = 100;
-const bigBlind = bank * 0.01;
-const smallBlind = bank * 0.005;
+
+let bank = [];
+const bankSize = 2000;
+const bigBlind = bankSize * 0.01;
+const smallBlind = bankSize * 0.005;
 
 // Event Listeners
 document.addEventListener("DOMContentLoaded", getPlayers);
 addButton.addEventListener("click", addPlayer);
-// playerList.addEventListener("click", actionsPlayer);
+playerList.addEventListener("click", actionsPlayer);
 filterOption.addEventListener("click", filterPlayers);
 testButton.addEventListener("click", testClick);
+
+var incrementFrom0 = (function (n) {
+  return function () {
+    n += 1;
+    return n;
+  };
+})(-1);
+
+var incrementFrom02 = (function (n) {
+  return function () {
+    n += 1;
+    return n;
+  };
+})(-1);
+
+// var incrementFrom03 = (function (n) {
+//   return function () {
+//     n += 1;
+//     return n;
+//   };
+// })(-1);
+
+class Bank {
+  constructor(amount) {
+    this.amount = amount;
+  }
+}
+
+function addBank(e) {
+  bank[incrementFrom0()] = new Bank(bankSize);
+}
 
 // Functions
 function addPlayer(event) {
   event.preventDefault();
+
   // Player DIV
   const playerDiv = document.createElement("div");
   playerDiv.classList.add("player");
@@ -27,12 +61,14 @@ function addPlayer(event) {
   newPlayer.classList.add("player-item");
   playerDiv.appendChild(newPlayer);
 
-  // const newOptions = document.createElement("li");
-  // newOptions.classList.add("raise-options");
-  // playerDiv.appendChild(newPlayer);
-
   // Add player to local storage
   saveLocalPlayers(addInput.value);
+
+  addBank();
+  console.log(bank);
+
+  localStorage.setItem("bank", JSON.stringify(bank));
+
   // Quit Button
   const quitButton = document.createElement("button");
   quitButton.innerHTML = '<i class="fas fa-sign-in-alt"></i>';
@@ -92,7 +128,7 @@ function addPlayer(event) {
 
   // Bank Button
   const bankButton = document.createElement("button");
-  bankButton.innerText = bank;
+  bankButton.innerText = bank[incrementFrom02()].amount;
   bankButton.classList.add("bank-btn");
   playerDiv.appendChild(bankButton);
 
@@ -122,6 +158,11 @@ function actionsPlayer(e) {
     player.addEventListener("transitionend", function () {
       player.remove();
     });
+
+    bank.splice(0, 1);
+    localStorage.setItem("bank", JSON.stringify(bank));
+
+    // localStorage.removeItem("bank");
   }
 
   // Fold button
@@ -129,7 +170,8 @@ function actionsPlayer(e) {
     const player = item.parentElement;
     player.classList.toggle("folded");
     testClick(e);
-    console.log("button position in class: " + player.classList.length);
+    // console.log("button position in class: " + player.classList.indexOf);
+    console.log(Array.from(player.parentElement.classList));
   }
 
   // Check button
@@ -159,7 +201,7 @@ function actionsPlayer(e) {
   // Increase button
   if (item.classList[0] === "increase-btn") {
     const player = item.parentElement.parentElement;
-    player.childNodes[6].innerText = bank - bigBlind;
+    player.childNodes[6].innerText = bankSize - bigBlind;
     player.childNodes[7].innerText = bigBlind;
   }
 }
@@ -210,6 +252,11 @@ function getPlayers() {
     players = [];
   } else {
     players = JSON.parse(localStorage.getItem("players"));
+  }
+  if (localStorage.getItem("bank") === null) {
+    bank = [];
+  } else {
+    bank = JSON.parse(localStorage.getItem("bank"));
   }
   players.forEach(function (player) {
     // Player DIV
@@ -279,7 +326,7 @@ function getPlayers() {
 
     // Bank Button
     const bankButton = document.createElement("button");
-    bankButton.innerText = bank;
+    // bankButton.innerText = bank[incrementFrom03].amount;
     bankButton.classList.add("bank-btn");
     playerDiv.appendChild(bankButton);
 
@@ -312,6 +359,11 @@ function removeLocalPlayers(player) {
 //************* can clean up ALL toggling by creating if loop, if toggle is set to true after clicking next move, set toggle as false.
 let playNumIndex = -1;
 let foldCount = 0;
+// change these global variables to this function insiode the "testclick" fucntion
+// function increment() {
+//   increment.n = increment.n || -1;
+//   return ++increment.n;
+// }
 
 function testClick(e) {
   event.preventDefault();
@@ -362,7 +414,7 @@ function testClick(e) {
     // if (playNumIndex > playerList.childNodes.length) {
     //   playNumIndex = playerList.childNodes.length;
     // }
-
+    console.log("balls: " + playerNumber[playNumIndex].folded);
     // initiate turn after last player, removes all deselected players
   } else if (playNumIndex >= playerList.childNodes.length) {
     playerList.childNodes[playNumIndex - 1].removeEventListener("click", actionsPlayer); // off
@@ -375,22 +427,3 @@ function testClick(e) {
   }
   console.log("PlayerNumberIndex: " + playNumIndex);
 }
-
-// const player1 = playerList.childNodes[0];
-
-// player1.style.transform = "rotate(180deg) translate(200px) rotate(-180deg)";
-
-// player1.childNodes[6].innerText = "777";
-
-// playerList.childNodes[0].style.transform = "rotate(180deg) translate(200px) rotate(-180deg)";
-// playerList.childNodes[1].style.transform = "rotate(220deg) translate(200px) rotate(-220deg)";
-// playerList.childNodes[2].style.transform = "rotate(260deg) translate(200px) rotate(-260deg)";
-// playerList.childNodes[3].style.transform = "rotate(300deg) translate(200px) rotate(-300deg)";
-// playerList.childNodes[4].style.transform = "rotate(340deg) translate(200px) rotate(-340deg)";
-// playerList.childNodes[5].style.transform = "rotate(20deg) translate(200px) rotate(-20deg)";
-// playerList.childNodes[6].style.transform = "rotate(60deg) translate(200px) rotate(-60deg)";
-// playerList.childNodes[7].style.transform = "rotate(100deg) translate(200px) rotate(-100deg)";
-// playerList.childNodes[8].style.transform = "rotate(140deg) translate(200px) rotate(-140deg)";
-// playerList.childNodes[0].childNodes[1].style.transform = "translateY(200px)";
-// playerList.childNodes[1].childNodes[1].style.transform = "translateY(200px)";
-// playerList.childNodes[2].childNodes[1].style.transform = "translateY(200px)";
