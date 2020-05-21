@@ -24,33 +24,23 @@ testButton.addEventListener("click", testClick);
 //   };
 // })(-1);
 
-// var incrementFrom02 = (function (n) {
-//   return function () {
-//     n += 1;
-//     return n;
-//   };
-// })(-1);
-
-// var incrementFrom03 = (function (n) {
-//   return function () {
-//     n += 1;
-//     return n;
-//   };
-// })(-1);
-
 class Bank {
   constructor(amount) {
     this.amount = amount;
+    this.currentBetTurn = 0;
+    this.currentBetRound = 0;
+    this.currentBetHand = 0;
   }
 }
 
-a = -1;
+incrementAddBank = -1;
+incrementChooseBank = -1;
+
 function addBank(e) {
-  if (a < 8) {
-    a += 1;
+  if (incrementAddBank < 8) {
+    incrementAddBank += 1;
   }
-  // bank[incrementFrom0()] = new Bank(bankSize);
-  bank[a] = new Bank(bankSize);
+  bank[incrementAddBank] = new Bank(bankSize);
 }
 
 function removeBigBlind() {
@@ -60,7 +50,7 @@ function addBigBlind() {
   bank[playNumIndex].amount += bigBlind;
 }
 
-b = -1;
+// Gets confused when adding players after a round of betting
 // Functions
 function addPlayer(event) {
   event.preventDefault();
@@ -141,11 +131,10 @@ function addPlayer(event) {
 
   // Bank Button
   const bankButton = document.createElement("button");
-  if (b < 8) {
-    b += 1;
+  if (incrementChooseBank < 8) {
+    incrementChooseBank += 1;
   }
-  // bankButton.innerText = bank[incrementFrom02()].amount;
-  bankButton.innerText = bank[b].amount;
+  bankButton.innerText = bank[incrementChooseBank].amount;
   bankButton.classList.add("bank-btn");
   playerDiv.appendChild(bankButton);
 
@@ -176,15 +165,13 @@ function actionsPlayer(e) {
       player.remove();
     });
 
-    // removes bank from local storage. right now just removes the first bank from array.
-    // need to make it so the bank item in array removed, is the corrent item corrosponding with player who exits
-    bank.splice(0, 1);
+    // removes bank from local storage
+    bank.splice(playNumIndex, 1);
     localStorage.setItem("bank", JSON.stringify(bank));
-    a = -1;
-    b = -1;
-    console.log("balls: " + a);
-    console.log("balls: " + b);
-    localStorage.removeItem("bank");
+    incrementAddBank = -1;
+    incrementchoosebank = -1;
+    console.log("balls: " + incrementAddBank);
+    console.log("balls: " + incrementchoosebank);
   }
 
   // Fold button
@@ -192,8 +179,7 @@ function actionsPlayer(e) {
     const player = item.parentElement;
     player.classList.toggle("folded");
     testClick(e);
-    // console.log("button position in class: " + player.classList.indexOf);
-    // console.log(Array.from(player.parentElement.classList));
+    console.log("button position in class: " + player.classList.length);
   }
 
   // Check button
@@ -242,7 +228,6 @@ function actionsPlayer(e) {
 }
 
 function filterPlayers(e) {
-  // playerList.childNodes[0].bankButton.innerText = "777";
   const players = playerList.childNodes;
   console.log(players);
   players.forEach(function (player) {
@@ -361,10 +346,10 @@ function getPlayers() {
 
     // Bank Button
     const bankButton = document.createElement("button");
-    if (b < 8) {
-      b += 1;
+    if (incrementChooseBank < 8) {
+      incrementChooseBank += 1;
     }
-    bankButton.innerText = bank[b].amount;
+    bankButton.innerText = bank[incrementChooseBank].amount;
     bankButton.classList.add("bank-btn");
     playerDiv.appendChild(bankButton);
 
@@ -390,8 +375,10 @@ function removeLocalPlayers(player) {
   const playerIndex = player.children[0].innerText;
   players.splice(players.indexOf(playerIndex), 1);
   localStorage.setItem("players", JSON.stringify(players));
-  console.log(player.children[0].innerText); // ***VERY IMPORTANT ***
-  // console.log(players.indexOf("cunt"));        // ***VERY IMPORTANT ***
+
+  console.log("player.children[0].innerText: " + player.children[0].innerText); // ***VERY IMPORTANT ***
+  console.log("players.indexOf(cunt): " + players.indexOf("cunt")); // ***VERY IMPORTANT ***
+  console.log("players.indexOf(playerIndex), 1): " + players.indexOf(playerIndex));
 }
 
 //************* can clean up ALL toggling by creating if loop, if toggle is set to true after clicking next move, set toggle as false.
@@ -408,33 +395,35 @@ function testClick(e) {
 
   const player = playerList.childNodes;
   // what is this called
-  if (playNumIndex < playerList.childNodes.length) {
+  if (playNumIndex < player.length) {
     playNumIndex = playNumIndex + 1;
   } else {
     playNumIndex = 0;
   }
   // create an array of player numbers
   let playerNumber = [player[0], player[1], player[2], player[3], player[4], player[5], player[6], player[7], player[8]];
-  // console.log("PlayerNumberIndex: " + playNumIndex);
+  // console.log("classlist length: " + playerNumber[playNumIndex].classList);
   // initiate first turn, select first player and deselect all others
+  // for (let h = 0; h < player.length; h++) {
+  //   playerNumber[h].classList.toggle("notTurn");
+  // }
   if (playNumIndex == 0) {
-    playerList.childNodes[playNumIndex].addEventListener("click", actionsPlayer); // on
+    player[0].classList.toggle("notTurn");
+  }
+  if (playNumIndex == 0 && playerNumber[playNumIndex].classList.length == 2) {
+    console.log(playerNumber[playNumIndex].classList.length);
+    player[playNumIndex].addEventListener("click", actionsPlayer); // on
     player[0].classList.toggle("turn");
-    for (let g = 1; g < playerList.childNodes.length; g++) {
+    player[0].classList.toggle("notTurn");
+
+    for (let g = 1; g < player.length; g++) {
       playerNumber[g].classList.toggle("notTurn");
     }
+    console.log(playerNumber[playNumIndex].classList.length);
+    console.log("classlist length: " + playerNumber[playNumIndex].classList);
 
-    // initiate all turns after the first, selects next player and deselects last player
-  } else if (playNumIndex > 0 && playNumIndex <= playerList.childNodes.length - 1 && playerNumber[playNumIndex].classList.length == 2) {
-    playerList.childNodes[playNumIndex].addEventListener("click", actionsPlayer); // on
-    playerList.childNodes[playNumIndex - 1].removeEventListener("click", actionsPlayer); // off
-    playerNumber[playNumIndex - 1].classList.toggle("turn");
-    playerNumber[playNumIndex - 1].classList.toggle("notTurn");
-    playerNumber[playNumIndex].classList.toggle("turn");
-    playerNumber[playNumIndex].classList.toggle("notTurn");
-
-    // skips over a folded player, seems to work, might need refactoring
-  } else if (playNumIndex > 0 && playNumIndex <= playerList.childNodes.length - 1 && playerNumber[playNumIndex].classList.length == 3) {
+    // if first pos folded
+  } else if (playNumIndex == 0 && playerNumber[playNumIndex].classList.length == 3) {
     foldCount = 0;
     do {
       foldCount = foldCount + 1;
@@ -442,26 +431,49 @@ function testClick(e) {
     } while (playerNumber[playNumIndex].classList.length == 3);
     playNumIndex = playNumIndex - foldCount;
 
-    playerList.childNodes[playNumIndex + foldCount].addEventListener("click", actionsPlayer); // on
-    playerList.childNodes[playNumIndex - 1].removeEventListener("click", actionsPlayer); // off
+    player[playNumIndex + foldCount].addEventListener("click", actionsPlayer); // on
+    playerNumber[playNumIndex + foldCount].classList.toggle("turn");
+    playerNumber[playNumIndex + foldCount].classList.toggle("notTurn");
+    for (let g = foldCount; g < player.length; g++) {
+      playerNumber[g].classList.toggle("notTurn");
+    }
+    playNumIndex = playNumIndex + foldCount;
+    console.log("classlist length: " + playerNumber[playNumIndex].classList);
+    // initiate all turns after the first, selects next player and deselects last player
+  } else if (playNumIndex > 0 && playNumIndex <= player.length - 1 && playerNumber[playNumIndex].classList.length == 2) {
+    player[playNumIndex].addEventListener("click", actionsPlayer); // on
+    player[playNumIndex - 1].removeEventListener("click", actionsPlayer); // off
+    playerNumber[playNumIndex - 1].classList.toggle("turn");
+    playerNumber[playNumIndex - 1].classList.toggle("notTurn");
+    playerNumber[playNumIndex].classList.toggle("turn");
+    playerNumber[playNumIndex].classList.toggle("notTurn");
+
+    console.log("classlist length: " + playerNumber[playNumIndex].classList);
+    // skips over a folded player, seems to work, might need refactoring
+  } else if (playNumIndex > 0 && playNumIndex <= player.length - 1 && playerNumber[playNumIndex].classList.length == 3) {
+    foldCount = 0;
+    do {
+      foldCount = foldCount + 1;
+      playNumIndex = playNumIndex + 1;
+    } while (playerNumber[playNumIndex].classList.length == 3);
+    playNumIndex = playNumIndex - foldCount;
+
+    player[playNumIndex + foldCount].addEventListener("click", actionsPlayer); // on
+    player[playNumIndex - 1].removeEventListener("click", actionsPlayer); // off
     playerNumber[playNumIndex - 1].classList.toggle("turn");
     playerNumber[playNumIndex - 1].classList.toggle("notTurn");
     playerNumber[playNumIndex + foldCount].classList.toggle("turn");
     playerNumber[playNumIndex + foldCount].classList.toggle("notTurn");
     playNumIndex = playNumIndex + foldCount;
-    // if (playNumIndex > playerList.childNodes.length) {
-    //   playNumIndex = playerList.childNodes.length;
-    // }
-    console.log("balls: " + playerNumber[playNumIndex].folded);
+
     // initiate turn after last player, removes all deselected players
-  } else if (playNumIndex >= playerList.childNodes.length) {
-    playerList.childNodes[playNumIndex - 1].removeEventListener("click", actionsPlayer); // off
+  } else if (playNumIndex >= player.length) {
+    player[playNumIndex - 1].removeEventListener("click", actionsPlayer); // off
     playerNumber[playNumIndex - 1].classList.toggle("turn");
     playerNumber[playNumIndex - 1].classList.toggle("notTurn");
-    for (let h = 0; h < playerList.childNodes.length; h++) {
+    for (let h = 0; h < player.length; h++) {
       playerNumber[h].classList.toggle("notTurn");
     }
-    // playNumIndex = playNumIndex[0];
   }
   console.log("PlayerNumberIndex: " + playNumIndex);
 }
